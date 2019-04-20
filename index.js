@@ -2,6 +2,13 @@ const express = require('express')
 const app = express();
 var formidable = require('formidable');
 var fs = require('fs');
+var http = require("http").Server(app);
+var https = require('https');
+var credentials = {
+  key: fs.readFileSync('/var/www/facebox/ssl/my-key.pem'),
+  cert: fs.readFileSync('/var/www/facebox/ssl/my-cert.pem')
+};
+var httpsServer = https.createServer(credentials, app);
 
 var Datastore = require('nedb')
   , db = new Datastore({ filename: 'data.db', autoload: true, timestampData:true  });
@@ -35,7 +42,7 @@ app.get('/all', (req, res) => {
   .sort({ createdAt: -1 })      // OR `.sort({ updatedAt: -1 })` to sort by last modification time
   .exec(function(err, doc) {
     if(doc.length > 0) {
-      
+
         console.log(doc);
         req.doc = doc;
         res.render('all.ejs', req);
@@ -63,6 +70,11 @@ app.get('/latest', (req, res) => {
 
 });
 
-app.listen(8000, () => {
-  console.log('Example app listening on port 8000!')
+http.listen(80, function(){
+  console.log('listening on *:80');
+});
+
+
+httpsServer.listen(443, function(){
+  console.log('listening on *:443');
 });
