@@ -25,8 +25,8 @@ app.post('/image-upload', (req, res) => {
   var form = new formidable.IncomingForm();
   console.log(form);
     form.parse(req, function (err, fields, files) {
-      console.log(files);
-      var oldPath = files.filetoupload.path;
+      console.log(files.image_name);
+      var oldPath = files.image_name.path;
       var imageName =  Date.now() + '.jpg';
       var newPath = './public/images/' + imageName;
       fs.rename(oldPath, newPath, function (error) {
